@@ -6,7 +6,7 @@
 # The following make variables are set by the including makefile:
 # - TARGET, ABIFLAGS: Set by arch.*.mk files.
 
-LLVM_VER := -14
+LLVM_VER :=
 
 ifeq ($(shell which ccache > /dev/null; echo $$?), 0)
   CCACHE := ccache
@@ -72,7 +72,7 @@ CPIO    = cpio --format=crc
 CSCOPE  = cscope -b
 CTAGS   = ctags
 FORMAT  = clang-format$(LLVM_VER) -style=file
-INSTALL = install -D
+INSTALL = ginstall -D
 LN	= ln
 RM      = rm -f
 TAR	= tar

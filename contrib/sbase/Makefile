@@ -186,7 +186,7 @@ $(foreach bin,$(BIN),$(eval $(call rename_main_func,$(bin))))
 PROGRAM = sbase-box
 BINDIR = bin
 BUILDDIR = build/
-SOURCES = $(PROGRAM).c $(addprefix sbase/,$(BIN:=.c)) $(addprefix sbase/,$(LIBUTILSRC)) $(addprefix sbase/,$(LIBUTFSRC))
+SOURCES = $(PROGRAM).c $(addprefix sbase/,$(LIBUTILSRC)) $(addprefix sbase/,$(LIBUTFSRC)) $(addprefix sbase/build/,$(BIN:=.c))
 FORMAT-EXCLUDE = $(SOURCES) $(addprefix sbase/,$(HDR))
 
 WFLAGS += -Wno-error=sign-compare -Wno-error=implicit-fallthrough

@@ -83,3 +83,5 @@ mimiker-env/
 
 #
 contrib/*/build/
+
+*.pdf

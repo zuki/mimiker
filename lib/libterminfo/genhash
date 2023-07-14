@@ -57,7 +57,8 @@ genent()
   sed -e "1,/enum TI${NAME}/d" -e '/};/,$d' \
       -e 's/.*TICODE_\([^,]*\).*/\1/' $TERMH | \
       awk "BEGIN {print \"$STRUCT_DECL\n%%\"} {print \$0 \", \" NR-1}" | \
-      gperf --compare-strncmp --hash-function-name=_ti_${name}hash \
+      gperf --language=ANSI-C \
+            --compare-strncmp --hash-function-name=_ti_${name}hash \
             --lookup-function-name=_ti_${name}lookup --enum \
             --struct-type --omit-struct-type --initializer-suffix=", 0"
 

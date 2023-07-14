@@ -37,7 +37,7 @@ static char vdisable_c;
 
 /* Called from main */
 void
-x_init()
+x_init(void)
 {
 	/* set to -2 to force initial binding */
 	edchars.erase = edchars.kill = edchars.intr = edchars.quit
@@ -78,8 +78,7 @@ x_init()
 
 #if defined(TIOCGWINSZ)
 __unused static RETSIGTYPE
-x_sigwinch(sig)
-    	int sig;
+x_sigwinch(int sig)
 {
 	got_sigwinch = 1;
 	return RETSIGVAL;
@@ -104,7 +103,7 @@ check_sigwinch ARGS((void))
 			if (ws.ws_col) {
 				x_cols = ws.ws_col < MIN_COLS ? MIN_COLS
 						: ws.ws_col;
-				
+
 				if ((vp = typeset("COLUMNS", 0, 0, 0, 0)))
 					setint(vp, (long) ws.ws_col);
 			}
@@ -120,9 +119,7 @@ check_sigwinch ARGS((void))
  * read an edited command line
  */
 int
-x_read(buf, len)
-	char *buf;
-	size_t len;
+x_read(char *buf, size_t len)
 {
 	int	i;
 
@@ -150,7 +147,7 @@ x_read(buf, len)
 /* tty I/O */
 
 int
-x_getc()
+x_getc(void)
 {
 #ifdef OS2
 	unsigned char c = _read_kbd(0, 1, 0);
@@ -172,29 +169,26 @@ x_getc()
 }
 
 void
-x_flush()
+x_flush(void)
 {
 	shf_flush(shl_out);
 }
 
 void
-x_putc(c)
-	int c;
+x_putc(int c)
 {
 	shf_putc(c, shl_out);
 }
 
 void
-x_puts(s)
-	const char *s;
+x_puts(const char *s)
 {
 	while (*s != 0)
 		shf_putc(*s++, shl_out);
 }
 
 bool_t
-x_mode(onoff)
-	bool_t	onoff;
+x_mode(bool_t onoff)
 {
 	static bool_t	x_cur_mode;
 	bool_t		prev;
@@ -207,7 +201,7 @@ x_mode(onoff)
 	if (onoff) {
 		TTY_state	cb;
 		X_chars		oldchars;
-		
+
 		oldchars = edchars;
 		cb = tty_state;
 
@@ -327,9 +321,7 @@ x_mode(onoff)
  *      length
  */
 int
-promptlen(cp, spp)
-    const char  *cp;
-    const char **spp;
+promptlen(const char *cp, const char **spp)
 {
     int count = 0;
     const char *sp = cp;
@@ -369,8 +361,7 @@ promptlen(cp, spp)
 }
 
 void
-set_editmode(ed)
-	const char *ed;
+set_editmode(const char *ed)
 {
 	static const enum sh_flag edit_flags[] = {
 #ifdef EMACS
@@ -404,10 +395,7 @@ set_editmode(ed)
  * moved to the start of the line after (un)commenting.
  */
 int
-x_do_comment(buf, bsize, lenp)
-	char *buf;
-	int bsize;
-	int *lenp;
+x_do_comment(char *buf, int bsize, int *lenp)
 {
 	int i, j;
 	int len = *lenp;
@@ -485,10 +473,7 @@ x_complete_word(str, slen, is_command, nwordsp, ret)
 #endif /* 0 */
 
 void
-x_print_expansions(nwords, words, is_command)
-	int nwords;
-	char *const *words;
-	int is_command;
+x_print_expansions(int nwords, char *const *words, int is_command)
 {
 	int use_copy = 0;
 	int prefix_len;
@@ -544,11 +529,7 @@ x_print_expansions(nwords, words, is_command)
  *	- returns number of matching strings
  */
 static int
-x_file_glob(flags, str, slen, wordsp)
-	int flags;
-	const char *str;
-	int slen;
-	char ***wordsp;
+x_file_glob(int flags, const char *str, int slen, char ***wordsp)
 {
 	char *toglob;
 	char **words;
@@ -636,9 +617,7 @@ static int path_order_cmp(const void *aa, const void *bb);
 
 /* Compare routine used in x_command_glob() */
 static int
-path_order_cmp(aa, bb)
-	const void *aa;
-	const void *bb;
+path_order_cmp(const void *aa, const void *bb)
 {
 	const struct path_order_info *a = (const struct path_order_info *) aa;
 	const struct path_order_info *b = (const struct path_order_info *) bb;
@@ -649,11 +628,7 @@ path_order_cmp(aa, bb)
 }
 
 static int
-x_command_glob(flags, str, slen, wordsp)
-	int flags;
-	const char *str;
-	int slen;
-	char ***wordsp;
+x_command_glob(int flags, const char *str, int slen, char ***wordsp)
 {
 	char *toglob;
 	char *pat;
@@ -747,12 +722,7 @@ x_command_glob(flags, str, slen, wordsp)
 			    || (c) == '`' || (c) == '=' || (c) == ':' )
 
 static int
-x_locate_word(buf, buflen, pos, startp, is_commandp)
-	const char *buf;
-	int buflen;
-	int pos;
-	int *startp;
-	int *is_commandp;
+x_locate_word(const char *buf, int buflen, int pos, int *startp, int *is_commandp)
 {
 	int p;
 	int start, end;
@@ -804,15 +774,7 @@ x_locate_word(buf, buflen, pos, startp, is_commandp)
 }
 
 int
-x_cf_glob(flags, buf, buflen, pos, startp, endp, wordsp, is_commandp)
-	int flags;
-	const char *buf;
-	int buflen;
-	int pos;
-	int *startp;
-	int *endp;
-	char ***wordsp;
-	int *is_commandp;
+x_cf_glob(int flags, const char *buf, int buflen, int pos, int *startp, int *endp, char ***wordsp, int *is_commandp)
 {
 	int len;
 	int nwords;
@@ -848,9 +810,7 @@ x_cf_glob(flags, buf, buflen, pos, startp, endp, wordsp, is_commandp)
  * new string is returned.
  */
 static char *
-add_glob(str, slen)
-	const char *str;
-	int slen;
+add_glob(const char *str, int slen)
 {
 	char *toglob;
 	char *s;
@@ -889,9 +849,7 @@ add_glob(str, slen)
  * Find longest common prefix
  */
 int
-x_longest_prefix(nwords, words)
-	int nwords;
-	char *const *words;
+x_longest_prefix(int nwords, char *const *words)
 {
 	int i, j;
 	int prefix_len;
@@ -912,9 +870,7 @@ x_longest_prefix(nwords, words)
 }
 
 void
-x_free_words(nwords, words)
-	int nwords;
-	char **words;
+x_free_words(int nwords, char **words)
 {
 	int i;
 
@@ -937,9 +893,7 @@ x_free_words(nwords, words)
  *			0
  */
 int
-x_basename(s, se)
-	const char *s;
-	const char *se;
+x_basename(const char *s, const char *se)
 {
 	const char *p;
 
@@ -964,10 +918,7 @@ x_basename(s, se)
  * are added to wp.
  */
 static void
-glob_table(pat, wp, tp)
-	const char *pat;
-	XPtrV *wp;
-	struct table *tp;
+glob_table(const char *pat, XPtrV *wp, struct table *tp)
 {
 	struct tstate ts;
 	struct tbl *te;
@@ -979,11 +930,7 @@ glob_table(pat, wp, tp)
 }
 
 static void
-glob_path(flags, pat, wp, xpath)
-	int flags;
-	const char *pat;
-	XPtrV *wp;
-	const char *xpath;
+glob_path(int flags, const char *pat, XPtrV *wp, const char *xpath)
 {
 	const char *sp, *p;
 	char *xp;
@@ -1053,10 +1000,7 @@ glob_path(flags, pat, wp, xpath)
  * keybinding-specific function
  */
 int
-x_escape(s, len, putbuf_func)
-	const char *s;
-	size_t len;
-	int (*putbuf_func) ARGS((const char *, size_t));
+x_escape(const char *s, size_t len, int (*putbuf_func) ARGS((const char *, size_t)))
 {
 	size_t add, wlen;
 	const char *ifs = str_val(local("IFS", 0));

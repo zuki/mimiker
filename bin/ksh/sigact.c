@@ -255,10 +255,8 @@ sigaction(sig, act, oact)
 }
 
 
-int
-sigaddset(mask, sig)
-  sigset_t *mask;
-  int sig;
+int 
+sigaddset (sigset_t *mask, int sig)
 {
   *mask |= sigmask(sig);
   return 0;
@@ -266,10 +264,8 @@ sigaddset(mask, sig)
 
 
 #ifndef IS_KSH
-int
-sigdelset(mask, sig)
-  sigset_t *mask;
-  int sig;
+int 
+sigdelset (sigset_t *mask, int sig)
 {
   *mask &= ~(sigmask(sig));
   return 0;
@@ -277,9 +273,8 @@ sigdelset(mask, sig)
 #endif /* IS_KSH */
 
 
-int
-sigemptyset(mask)
-  sigset_t *mask;
+int 
+sigemptyset (sigset_t *mask)
 {
   *mask = 0;
   return 0;
@@ -287,9 +282,8 @@ sigemptyset(mask)
 
 
 #ifndef IS_KSH
-int
-sigfillset(mask)
-  sigset_t *mask;
+int 
+sigfillset (sigset_t *mask)
 {
   *mask = ~0;
   return 0;
@@ -298,10 +292,8 @@ sigfillset(mask)
 
 
 #ifndef IS_KSH
-int
-sigismember(mask, sig)
-  sigset_t *mask;
-  int sig;
+int 
+sigismember (sigset_t *mask, int sig)
 {
   return ((*mask) & sigmask(sig));
 }
@@ -309,19 +301,16 @@ sigismember(mask, sig)
 
 
 #ifndef IS_KSH
-int
-sigpending(set)
-  sigset_t *set;
+int 
+sigpending (sigset_t *set)
 {
   return 0;				/* faking it! */
 }
 #endif /* IS_KSH */
 
 
-int
-sigprocmask(how, set, oset)
-  int how;
-  sigset_t *set, *oset;
+int 
+sigprocmask (int how, sigset_t *set, sigset_t *oset)
 {
 #ifdef USE_SIGSET
   register int i;
@@ -384,9 +373,8 @@ sigprocmask(how, set, oset)
 }
 
 
-int
-sigsuspend(mask)
-  sigset_t *mask;
+int 
+sigsuspend (sigset_t *mask)
 {
 #ifdef USE_SIGMASK
   sigpause(*mask);
@@ -442,9 +430,8 @@ sigsuspend(mask)
  */
 
 #ifndef IS_KSH
-handler_t Signal(sig, handler)
-  int sig;
-  handler_t handler;
+handler_t 
+Signal (int sig, handler_t handler)
 {
   struct sigaction act, oact;
 
@@ -463,9 +450,8 @@ handler_t Signal(sig, handler)
  * ensure we avoid signal mayhem
  */
 
-handler_t signal(sig, handler)
-  int sig;
-  handler_t handler;
+handler_t 
+signal (int sig, handler_t handler)
 {
   return (Signal(sig, handler));
 }

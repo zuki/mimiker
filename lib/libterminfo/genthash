@@ -45,15 +45,15 @@ EOF
 
 sed -n -e "1,/_ti_cap_flagids/d" -e '/};/,$d' \
     -e 's/.*"\([^"]*\)".*/"\1"/p' $TERMCAPC | \
-    gperf --compare-strncmp --hash-function-name=_t_flaghash \
+    gperf --language=ANSI-C --compare-strncmp --hash-function-name=_t_flaghash \
           --lookup-function-name=__unused1 --enum
 echo
 sed -n -e "1,/_ti_cap_numids/d" -e '/};/,$d' \
     -e 's/.*"\([^"]*\)".*/"\1"/p' $TERMCAPC | \
-    gperf --compare-strncmp --hash-function-name=_t_numhash \
+    gperf --language=ANSI-C --compare-strncmp --hash-function-name=_t_numhash \
           --lookup-function-name=__unused2 --enum
 echo
 sed -n -e "1,/_ti_cap_strids/d" -e '/};/,$d' \
     -e 's/.*"\([^"]*\)".*/"\1"/p' $TERMCAPC | \
-    gperf --compare-strncmp --hash-function-name=_t_strhash \
+    gperf --language=ANSI-C --compare-strncmp --hash-function-name=_t_strhash \
           --lookup-function-name=__unused3 --enum

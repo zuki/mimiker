@@ -11,6 +11,7 @@
 #define SIGILL 4    /* illegal instruction (not reset when caught) */
 #define SIGTRAP 5   /* trace trap (not reset when caught) */
 #define SIGABRT 6   /* abort() */
+#define SIGEMT 7
 #define SIGFPE 8    /* floating point exception */
 #define SIGKILL 9   /* kill (cannot be caught or ignored) */
 #define SIGBUS 10   /* bus error */
@@ -19,12 +20,18 @@
 #define SIGPIPE 13  /* write on a pipe with no one to read it */
 #define SIGALRM 14  /* alarm clock */
 #define SIGTERM 15  /* software termination signal from kill */
+#define SIGURG  16
 #define SIGSTOP 17  /* sendable stop signal not from tty */
 #define SIGTSTP 18  /* stop signal from tty */
 #define SIGCONT 19  /* continue a stopped process */
 #define SIGCHLD 20  /* to parent on child stop or exit */
 #define SIGTTIN 21  /* to readers pgrp upon background tty read */
 #define SIGTTOU 22  /* like TTIN for output if (tp->t_local&LTOSTOP) */
+#define SIGIO   23  /* */
+#define SIGXCPU 24
+#define SIGXFSZ 25
+#define SIGVTALRM 26
+#define SIGPROF 27
 #define SIGWINCH 28 /* window size changes */
 #define SIGINFO 29  /* information request */
 #define SIGUSR1 30  /* user defined signal 1 */

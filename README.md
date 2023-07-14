@@ -1,91 +1,96 @@
-# Mimiker: Unix-like system for education and research purposes
+# Mimiker: 教育・研究用のUnixライクなシステム
 
-Mimiker's main goal is to deliver minimal Unix-like operating system, i.e.
-the kernel and a set of userspace programs.
+Mimikerの主な目的は最小限のUnixライクなオペレーティングシステム、すなわち
+カーネルと一連のユーザ空間プログラムを提供することです。
 
-Kernel design is heavily inspired by FreeBSD & NetBSD systems with some ideas
-taken from Linux, Plan9 and other OSes. We spend a lot of time reading source
-code of open-source operating systems. We carefully choose their best design
-decisions, ideas, algorithms, APIs, practices and so on, distill them to bare
-minimum and reimplement them or adapt to Mimiker code base. We hope not to
-repeat their mistakes and move away from legacy and non-perfect solutions.
+カーネルの設計はFreeBSDとNetBSDに大きくインスパイアされており、LinuxやPlan9、
+その他のOSからもアイデアを取り入れています。私たちはオープンソースの
+オペレーティングシステムのソースコードを読むことに多くの時間を費やしています。
+そして、それらから最良の設計判断、アイデア、アルゴリズム、API、実践などを
+注意深く選択して、最小限のものを抽出し、Mimikerのコードベースに再実装したり、
+適応させたりしています。私たちは彼らの失敗は繰り返したくはありません、また、
+レガシーで完璧でないソリューションから離れたいと願っています。
 
-Mimiker project gathers like minded people who value minimalism, simplicity and
-readability of code. We strive for the lowest possible complexity of solutions.
-We love to throw away code that isn't terribly useful or handles rare edge
-cases. We know value of debuggability and we don't hesitate to spend time
-writing tools that help to improve it.
+Mimikerプロジェクトにはコードのミニマリズム、シンプルさ、読みやすさを重視する
+考えを持つ人々が集まっています。私たちは可能な限り複雑さを抑えたソリューション
+を目指しています。有用でないコードや稀なエッジケースを処理するコードを捨てる
+ことが大好きです。デバッグの価値を知っており、デバッグの向上に役立つツールを
+書くことに時間を費やすことをためらいません。
 
-Though userspace programs are part of Mimiker project, they've got simply ported
-from NetBSD or [suckless][1] project. We focus on kernel development, since we
-find it more interesting. We don't want to invest too much time into the device
-drivers, so we keep a list of target platforms small.
+ユーザ空間のプログラムはMimikerプロジェクトの一部ですが、NetBSDや
+[suckless][1]プロジェクトから移植したものにすぎません。私たちはカーネルの
+開発に集中しています。そちらのほうが面白いからです。デバイスドライバには
+あまり時間を費やしたくないので対象となるプラットフォームのリストは小さく
+しています。
 
-If you'd like to get involved in the project please read our [Wiki][2] to find
-out more!
+このプロジェクトに参加したい場合は[Wiki][2]を読んでください。
 
-## Where we are
+## 現状
 
-Mimiker is a real-time operating system. The kernel is preemptible and our
-mutexes support priority inheritance. We minimize work done in interrupt context
-by delegating it to interrupt threads instead of running it using soft
-interrupts.
+Mimikerはリアルタイム・オペレーティングシステムです。カーネルはプリエンプ
+ティブであり、ミューテックスは優先順位継承をサポートしています。割り込み
+コンテキストにおける作業は、ソフト割り込みを使って実行するのではなく、
+割り込みスレッドに委譲することで最小限に抑えています。
 
-Mimiker runs on [MIPS][15] (32-bit), [AArch64][9] and [RISC-V][10] (both 32-bit
-and 64-bit) architectures under [QEmu][11] and [Renode][12] control.
+Mimikerは[QEMU][11]と[Renode][12]の制御の下、[MIPS][15]（32ビット）、
+[AArch64][9]、[RISC-V][10]（32ビットと64ビット）の各アーキテクチャで
+動作します。
 
-Mimiker has nice set of debugging tools: `gdb` scripts written in Python, Kernel
-Address Sanitizer, Lock dependency validator, Kernel Concurrency Sanitizer. We
-even have support for profiling the kernel using `gprof`! We use [Clang][19] to
-compile our code base, hence we can employ sophisticated dynamic and static
-analysis algorithms to aid code reliablity.
+Minikerは次のような素晴らしいデバッグツールを持っています。Pythonで
+書かれたgdbスクリプト、Kernel Address Sanitizer、Lock dependency validator、
+Kernel Concurrency Sanitizerです。gprofを使ったカーネルプロファイリングも
+サポートしています。コードベースのコンパイルには [Clang][19]を使用して
+いるため、コードの信頼性を高めるための洗練された動的・静的解析アルゴリズムを
+採用することができます。
 
-A common set of synchronization primitives is provided, i.e. spin-locks, mutexes
-and conditional variables - all with simple semantics. We don't have multiple
-primitives that do similar things, but a little bit differently, which is common
-for FreeBSD or Linux kernels.
+一般的な同期プリミティブ、すなわち、スピンロック、ミューテックス、条件変数が
+提供されています。いずれもセマンティクスはシンプルです。FreeBSDやLinuxの
+カーネルによくある、同じことをするけどちょっとだけ違うような多くの
+プリミティブを提供するようなことはしていません。
 
-Mimiker's kernel memory is wired (i.e. non-swappable), so you don't have to
-worry about choosing right locks when accessing kernel memory, unlike in
-FreeBSD.  We have buddy memory allocator for physical memory, virtual address
-space allocator and slab allocator based on [Magazines and Vmem][3] paper. Our
-memory allocators are simple yet efficient.
+Mimikerのカーネルメモリはワイヤード（スワップ不能）なので、FreeBSDとは違って、
+カーネルメモリにアクセスする際に正しいロックを選ぶ心配はありません。物理
+メモリ用のバディメモリアロケータ、仮想アドレス空間アロケータ、
+論文"[MagazinesとVmem][3]"に基づいたスラブアロケータを使用してます。
+これらのメモリアロケータはシンプルでありながら効率的です。
 
-Mimiker's driver infrastructure abstracts away concept of hardware register
-and interrupts in similar manner to FreeBSD's [NewBus][14]. Special care is
-taken to make drivers portable. We have enumerator routines that autodetect
-devices attached to PCI and USB buses. We use [flat device tree][13] to drive
-kernel configuration during startup phase.
+Mimikerのドライバ基盤はFreeBSDの[NewBus][14]と同じ方法でハードウェア
+レジスタと割り込みの概念を抽象化しています。ドライバのポータビリティには
+特に注意を払っています。PCIやUSBバスに接続されたデバイスを自動検出する
+エヌメレーションルーチンもあります。起動時にカーネルコンフィギュレーションを
+行うために[flat device tree][13]を使用しています。
 
-Virtual file system and user virtual address space management are loosely based
-on FreeBSD ideas. They need substatial amount of work to become as mature as in
-FreeBSD or Linux kernels.
+仮想ファイルシステムとユーザ仮想アドレス空間の管理は大まかにはFreeBSDの
+アイデアに基づいています。これらがFreeBSDやLinuxのカーネル並みに成熟する
+にはかなりの量の作業が必要です。
 
-## What we are proud of
+## 私たちの自慢
 
-We have over eighty [syscalls][4] that allow us to run various open-source
-tools, including NetBSD's [Korn Shell][5], [Atto Emacs][6] editor, [Lua][7]
-interpreter, and many more. We even have a game:
+80を超える[syscalls][4]を提供しているのでNetBSDの[Korn Shell][5]や
+[Atto Emacs][6]エディタ、[Lua][7]インタプリタなど、さまざまなオープン
+ソースのツールを実行できます。ゲームもできます。
 
 ![tetris][8]
 
-Mimiker supports:
- * UNIX file I/O -- well known APIs for file-like objects access,
- * interprocess communication -- POSIX signal and pipes,
- * job control -- thus we can run unmodified [Korn Shell][18],
- * UNIX credentials -- users, groups, file permissions,
- * libterminfo, hence Mimiker can run some fullscreen terminal applications,
- * [pseudoterminals][16] -- so we can run [script][17] or terminal emulators.
+Mimikerは次の機能をサポートしてます。
 
-## What is missing
+* UNIXファイルI/O -- ファイルライクなオブジェクトにアクセスのためのよく知られたAPI
+* プロセス間通信 -- POSIXシグナルとパイプ
+* ジョブコントロール -- [Korn Shell][18]をそのまま実行できます
+* UNIX認証情報 -- ユーザ、グループ、ファイル・パーミッション
+* libterminfo -- Mimikerはフルスクリーン端末アプリケーションを実行できます
+* [擬似端末][16] --  [script][17]や端末エミュレータを実行できます
 
-We would like to support:
- * multi-core systems,
- * VirtIO and virt platforms in QEmu,
- * a filesystem for non-volatile storage devices,
- * TCP/IP protocols.
+## 足りないもの
 
-There's plenty of work to be done. Please refer to our roadmap!
+今後サポートしたいのは次の機能です。
+
+* マルチコアシステム
+* QEMUのVirtIOとvirtプラットフォーム
+* 不揮発性ストレージデバイス用のファイルシステム、
+* TCP/IPプロトコル。
+
+やるべきことはたくさんあります。ロードマップを参照してください。
 
 [1]: https://suckless.org
 [2]: https://github.com/cahirwpz/mimiker/wiki

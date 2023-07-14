@@ -26,9 +26,9 @@ contrib-before: lib-install
 # forcing make to always rebuild the archive.
 initrd.cpio: bin-install usr.bin-install contrib-install
 	@echo "[INITRD] Building $@..."
-	cd sysroot && \
-	  find -depth \( ! -name "*.dbg" -and -print \) | sort | \
-	    $(CPIO) -o -R +0:+0 -F ../$@ 2> /dev/null
+	(cd sysroot && \
+	  find . -depth \( ! -name "*.dbg" -and -print \) | sort | \
+	    $(CPIO) -o -R +0:+0 -F ../$@ 2> /dev/null)
 
 INSTALL-FILES += initrd.cpio
 CLEAN-FILES += initrd.cpio
