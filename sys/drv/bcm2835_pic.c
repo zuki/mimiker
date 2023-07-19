@@ -79,11 +79,13 @@ static void bcm2835_pic_setup_intr(device_t *pic, device_t *dev, resource_t *r,
   unsigned irq = r->r_irq;
   assert(irq < BCM2835_NIRQ);
 
+  // 割り込みイベントの作成
   if (bcm2835_pic->intr_event[irq] == NULL)
     bcm2835_pic->intr_event[irq] =
       intr_event_create(bcm2835_pic, irq, bcm2835_pic_disable_irq,
                         bcm2835_pic_enable_irq, bcm2835_pic_intr_name(irq));
 
+  // 割り込みイベントの登録(割り込みスレッドがまだ存在しない場合は作成され起動する）
   r->r_handler = intr_event_add_handler(bcm2835_pic->intr_event[irq], filter,
                                         service, arg, name);
 }
@@ -174,12 +176,14 @@ static int bcm2835_pic_attach(device_t *pic) {
   return 0;
 }
 
+// PIC ifの作成
 static pic_methods_t bcm2835_pic_if = {
   .setup_intr = bcm2835_pic_setup_intr,
   .teardown_intr = bcm2835_pic_teardown_intr,
   .map_intr = bcm2835_pic_map_intr,
 };
 
+// PIC driverの作成
 static driver_t bcm2835_pic_driver = {
   .desc = "BCM2835 PIC driver",
   .size = sizeof(bcm2835_pic_state_t),

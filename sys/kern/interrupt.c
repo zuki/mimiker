@@ -100,12 +100,13 @@ static void intr_event_insert_handler(intr_event_t *ie, intr_handler_t *ih) {
 }
 
 static void intr_thread_maybe_attach(intr_event_t *ie, intr_handler_t *ih) {
-  /* Ensure we can create interrupt thread only once! */
+  /* 割り込みスレッドの作成が1回しかできないことを保証する */
   WITH_MTX_LOCK (&ie->ie_lock) {
     if (ie->ie_ithread != NULL || ih->ih_service == NULL)
       return;
-    /* We can't execute `thread_create` under spin lock, thus mark ie_thread
-     * so that no other thread will attempt to execute code below. */
+    /* スピンロック下では`thread_create`を実行できないので
+     * ie_threadにマークをつけて他のスレッドが以下のコードを
+     * 実行しないようにする。 */
     ie->ie_ithread = (thread_t *)1L;
   }
 
@@ -125,7 +126,7 @@ intr_handler_t *intr_event_add_handler(intr_event_t *ie, ih_filter_t *filter,
   ih->ih_name = name;
   ih->ih_flags = 0;
   intr_event_insert_handler(ie, ih);
-  intr_thread_maybe_attach(ie, ih);
+  intr_thread_maybe_attach(ie, ih);     // 割り込みスレッドの作成と実行
   return ih;
 }
 
@@ -247,15 +248,15 @@ int pic_map_intr(device_t *dev, fdt_intr_t *intr) {
 static void intr_thread(void *arg) {
   intr_event_t *ie = (intr_event_t *)arg;
 
-  /* When we enter intr_thread `ie`-specific interrupt may not have been
-   * disabled, but we execute the loop with that assumption. Fix that. */
+  /* intr_threadに入ったとき、`ie`固有の割り込みは無効になっていない
+   * 可能性があるが、その前提でループを実行している。修正が必要。 */
   ie_disable(ie);
 
   while (true) {
     intr_handler_t *ih, *ih_next;
 
-    /* The interrupt associated with `ie` was disabled by
-     * `intr_event_run_handlers`, so it's safe to use `ie` now. */
+    /* `ie`に関連する割り込みは`intr_event_run_handlers`によって
+     * 無効化されているのでここで`ie`を使っても問題ない。 */
     TAILQ_FOREACH_SAFE (ih, &ie->ie_handlers, ih_link, ih_next) {
       if (ih->ih_flags & IH_DELEGATE) {
         ih->ih_service(ih->ih_argument);
@@ -268,9 +269,9 @@ static void intr_thread(void *arg) {
       }
     }
 
-    /* If there are still handlers assigned to the interrupt event, enable
-     * interrupts and wait for a wakeup. We do it with interrupts disabled
-     * to prevent the wakeup from being lost. */
+    /* 割り込みイベントに割り当てられたハンドラがまだある場合は、
+     * 割り込みを有効にして起床を待つ。起床されないのを防ぐために
+     * 割り込みを無効にして行う。 */
     WITH_INTR_DISABLED {
       if (!TAILQ_EMPTY(&ie->ie_handlers))
         ie_enable(ie);
