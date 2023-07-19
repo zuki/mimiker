@@ -122,7 +122,7 @@ CONFIG = {
                 'drive': 'if=none,id=stick,file={path}',
             },
             'rpi3': {
-                'binary': 'qemu-mimiker-aarch64',
+                'binary': 'qemu-system-aarch64',
                 'options': [
                     '-machine', 'raspi3b',
                     '-smp', '4',
@@ -183,7 +183,7 @@ CONFIG = {
                 'binary': 'mipsel-mimiker-elf-gdb'
             },
             'rpi3': {
-                'binary': 'aarch64-mimiker-elf-gdb'
+                'binary': 'gdb'
             },
             'litex-riscv': {
                 'binary': 'riscv32-mimiker-elf-gdb'
